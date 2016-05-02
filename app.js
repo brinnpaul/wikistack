@@ -1,6 +1,6 @@
 var express = require('express');
 var morgan = require('morgan');
-var router = require('./routes');
+var wikiRouter = require('./routes/wiki.js');
 var models = require('./models');
 var swig = require('swig');
 var path = require('path');
@@ -28,6 +28,8 @@ app.use(bodyParser.json()); // would be for AJAX requests
 
 app.use(express.static(path.join(__dirname, '/public')));
 
+app.use('/wiki', wikiRouter);
+
 //------------- database config --------------
 
 models.User.sync({})
@@ -35,7 +37,7 @@ models.User.sync({})
     return models.Page.sync({})
 })
 .then(function () {
-    server.listen(3001, function () {
+    app.listen(3001, function () {
         console.log('Server is listening on port 3001!');
     });
 })
