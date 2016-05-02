@@ -1,18 +1,21 @@
 var Sequelize = require('sequelize');
-var db = new Sequelize('postgres://localhost:5432/wikistack');
+var db = new Sequelize('wikistack', 'bpr', 'sunshine', {
+  dialect: 'postgres',
+  port: 5432
+});
 
 
 var Page = db.define('page', {
         title: {
-            type: Sequelize.STRING, 
+            type: Sequelize.STRING,
             allowNull: false
         },
         urlTitle: {
-            type: Sequelize.STRING, 
-            allowNull: false 
+            type: Sequelize.STRING,
+            allowNull: false
         },
         content: {
-            type: Sequelize.STRING, 
+            type: Sequelize.STRING,
             allowNull: false
         },
         status: {
@@ -20,8 +23,8 @@ var Page = db.define('page', {
         },
         date: {
             type: Sequelize.DATE
-        } 
-    }, 
+        }
+    },
         {
 
            getterMethods: {
@@ -41,19 +44,21 @@ function urlName(str){
 
 Page.hook('beforeValidate', function(page, options){
     page.urlTitle = urlName(page.title);
-})
+});
 
 var User = db.define('user', {
     name: {
-        type: Sequelize.STRING, 
+        type: Sequelize.STRING,
         allowNull: false
     },
     email: {
-        type: Sequelize.STRING, 
-        isEmail: true, 
+        type: Sequelize.STRING,
+        isEmail: true,
         allowNull: false
     }
 });
+
+Page.belongsTo(User, { as: 'author' });
 
 module.exports = {
   Page: Page,
