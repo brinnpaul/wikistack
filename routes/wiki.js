@@ -3,6 +3,7 @@ var wikiRouter = express.Router();
 var models = require('../models');
 var Page = models.Page;
 var User = models.User;
+var Promise = require('bluebird');
 
 wikiRouter.get('/', function(req, res, next){
 	Page.findAll()
@@ -20,6 +21,29 @@ wikiRouter.get('/users', function(req, res, next) {
 			allUsers: foundUsers
 		});
 	}).catch(next);
+});
+
+wikiRouter.get('/users/:userId', function(req, res, next) {
+
+	var userPromise = User.findById(req.params.userId);
+	var pagesPromise = Page.findAll({
+		where: {
+			authorId: req.params.userId
+		}
+	});
+
+	Promise.all([
+		userPromise,
+		pagesPromise
+	])
+	.spread(function(user, pages) {
+		console.log('HELLO', user, pages);
+		// var user = values[0];
+		// var pages = values[1];
+		res.render('userID', {user: user, pages: pages});
+	})
+	.catch(next);
+
 });
 
 
@@ -71,10 +95,16 @@ wikiRouter.get('/:pageTitle', function(req, res, next) {
 		// findAll fails for some unknown reason
 		where : {
 			urlTitle: req.params.pageTitle
-		}
+		},
+		include: [
+			{model: User, as: 'author'}
+		]
 	})
 	.then(function(foundPage) {
+		// res.json(foundPage).send();
 		res.render('wikipage', {
+			pageAuthID: foundPage.author.id,
+			pageAuthor: foundPage.author.name,
 			pageTitle: foundPage.title,
 			pageContent: foundPage.content
 		});
