@@ -1,11 +1,11 @@
 {% extends "layout.html" %}
 
 {% block content %}
-  <h3>Users</h3>
+  <h3>{{user}}'s Pages</h3>
   <hr>
   <ul class="list-unstyled">
-    {% for user in allUsers %}
-      <li><a href='{{user.id}}'>{{user.name}}</a></li>
+    {% for page in allPages %}
+      <li><a href=''>{{page.title}}</a></li>
     {% endfor %}
   </ul>
 {% endblock %}
