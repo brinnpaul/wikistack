@@ -13,6 +13,16 @@ wikiRouter.get('/', function(req, res, next){
 	}).catch(next);
 });
 
+wikiRouter.get('/users', function(req, res, next) {
+	User.findAll()
+	.then(function(foundUsers) {
+		// res.json(foundUsers).send();
+		res.render('users', {
+			allUsers: foundUsers
+		});
+	}).catch(next);
+});
+
 wikiRouter.post('/', function(req, res, next){
 // ---- updates DB -----
 	// var page = Page.build({
